@@ -2,13 +2,13 @@ Project - Quora
 
 In this project we are changing how we send token with a request. Instead of using a custom header key like x-api-key, you need to use Authorization header and send the JWT token as Bearer token.
 
-Phase 
-
 FEATURE I - User
 Models
 
 User Model
+
 { 
+
   fname: {string, mandatory},
   lname: {string, mandatory},
   email: {string, mandatory, valid email, unique(if exist)},
@@ -17,18 +17,22 @@ User Model
   creditScore: {Number, mandatory},
   createdAt: {timestamp},
   updatedAt: {timestamp}
+
 }
 
 
 User APIs
 
 POST /register
+
 Create a user document from request body.
 Save password in encrypted format. (use bcrypt)
+
 Response format
 On success - Return HTTP status 201. Also return the user document. The response should be a JSON object like this
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
 {
+
     "status": true,
     "data": {
         "fname": "John",
@@ -42,31 +46,38 @@ On error - Return a suitable error message with a valid HTTP status code. The re
         "updatedAt": "2021-10-10T06:25:46.051Z",
         "__v": 0
     }
+
 }
 
 POST /login
+
 Allow an user to login with their email and password.
 On a successful login attempt return the userId and a JWT token containing the userId, exp, iat.
 You should also return userId in addition to the JWT token. Refer the example below
+
 Response format
 On success - Return HTTP status 200 and JWT token in response body. The response should be a JSON object like this
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
 {
+
     "status": true,
     "data": {
         "userId": "6165f29cfe83625cf2c10a5c",
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2MTYyODc2YWJkY2I3MGFmZWVhZjljZjUiLCJpYXQiOjE2MzM4NDczNzYsImV4cCI6MTYzMzg4MzM3Nn0.PgcBPLLg4J01Hyin-zR6BCk7JHBY-RpuWMG_oIK7aV8"
     }
+
 }
 
 GET /user/:userId/profile (Authentication and authorisation required)
 
 Allow a user to fetch details of their profile.
 Make sure that userId in url param and in token is same
+
 Response format
 On success - Return HTTP status 200 and returns the user document. The response should be a JSON object like this
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
 {
+
     "status": true,
     "data": {
         "_id": "6162876abdcb70afeeaf9cf5",
@@ -80,6 +91,7 @@ On error - Return a suitable error message with a valid HTTP status code. The re
         "updatedAt": "2021-10-10T06:25:46.051Z",
         "__v": 0
     }
+
 }
 
 PUT /user/:userId/profile (Authentication and authorisation required)
@@ -88,10 +100,12 @@ Allow a user to update their profile.
 A user can update only the firstName, lastName, email and phone.
 The values to be updated must satisfy the constraints specified in the model. For example the updated email should still be unique and valid. The same applies to the rest of the fields.
 Make sure that userId in url param and in token is same and also that the updated user document is sent back in the response
+
 Response format
 On success - Return HTTP status 200. Also return the updated user document. The response should be a JSON object like this
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
 {
+
     "status": true,
     "data": {
         "_id": "6162876abdcb70afeeaf9cf5",
@@ -105,15 +119,20 @@ On error - Return a suitable error message with a valid HTTP status code. The re
         "updatedAt": "2021-10-10T08:47:15.297Z",
         "__v": 0
     }
-}
-Note: Refer the following links to explore brypt and form-data Bcrypt
 
-Send form-data
+}
+
+
+
 
 FEATURE II - Question
+
 Models
+
 question Model
+
 { 
+
   description: {string,mandatory} ,
   tag: {array of string},
   askedBy: {a referenec to user collection.,},
@@ -121,6 +140,7 @@ question Model
   isDeleted: {boolean, default: false},
   createdAt: {timestamp},
   updatedAt: {timestamp},
+
 }
 
 TAG : A tag refers to the category of question(Eg sci-fi, technology, coding, adventure etc)
@@ -129,11 +149,15 @@ DESCRIPTION : A decription denotes the question a users want to ask.
 question API
 
 POST /question(Authentication and authorisation required)
+
 Create a question document from request body. The request body should contain the userId along with the question details
+
 Response format
 On success - Return HTTP status 201. Also return the question document. The response should be a JSON object like this
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
+
 GET /questions (public api)
+
 Returns all questions in the collection that aren't deleted. Each question should contain all the answers, if available, for it.
 
 A guest user, a user that isnt' logged in, should be able to fetch all teh questions
@@ -146,87 +170,118 @@ On success - Return HTTP status 200. Also return the question documents. The res
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
 
 GET /questions/:questionId (public api)
+
 Returns question details by question id. Also contains the list of answers, if any, for the particular question.
+
 Response format
 On success - Return HTTP status 200. Also return the question documents. The response should be a JSON object like this
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
+
 PUT /questions/:questionId (authentication and authorisation)
+
 Updates a question by changing it's text or tag or both
 Check if the questionId exists. If it doesn't, return a suitable HTTP status with a response body like this
+
 Response format
 On success - Return HTTP status 200. Also return the updated question document. The response should be a JSON object like this
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
 
 DELETE /questions/:questionId(authentication and authorisation )
+
 Deletes a question by question id if it's not already deleted
+
 Response format
+
 On success - Return HTTP status 200. The response should be a JSON object like this
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
+
 FEATURE III - answer
+
 Model
+
 answer Model
+
 {
+
   answeredBy: {ObjectId, refs to User, mandatory},
   text: {string, mandatory},
   questionId: {ObjectId, refs to question, mandatory},
   isDeleted : default false,
   createdAt: {timestamp},
   updatedAt: {timestamp},
+
 }
 
 answer APIs
 
 POST /answer(authentication and authorisation required)
+
 Get questionId and the userId in request body along with the answer details.
+
 Response format
 On success - Return HTTP status 201. Also return the answer document. The response should be a JSON object like this
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
 + Please note a user can not answer their own question. In such a scenario, return a suitable HTTP status code and message.
 
 GET questions/:questionId/answer (public api)
+
 get all the answers linked to the question id.
 
 PUT /answer/:answerId (authentication and authorisation required)
+
 onyl the user posted the answer can edit the answer
+
 Response format
 On success - Return HTTP status 201. Also return the answer document. The response should be a JSON object like this
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
 
 DELETE answers/:answerId(authentication and authorisation required)
+
 -only the user posted the answer can delete it. Get the userId and questionId in the request body.
 
 Response format
 On success - Return HTTP status 200. Also return the answer document. The response should be a JSON object like this
 On error - Return a suitable error message with a valid HTTP status code. The response should be a JSON object like this
-Testing
-To test these apis create a new collection in Postman named Project quora
-Each api should have a new request in this collection
-Each request in the collection should be rightly named. Eg Create user, Create question, Get questions etc
-Each member of each team should have their tests in running state
+
 Response
+
 Successful Response structure
+
 {
+
   status: true,
   data: {
 
   }
+
 }
+
 Error Response structure
+
 {
+
   status: false,
   message: ""
+
 }
 Phase II
 
 There will be a credit score of 500 for every newly registered user.
+
 On posting a question there will be a deduction of 100 from the credit score of the OP (the one who posts the question).
+
 On posting a answer there will be a reward of 200 to the credit score of the person answering the question.
+
 credit score cannot be -ve.
 once credit score reached to 0, user cannot post any question and a suitable message should be displayed to the user.
 All the Answers of the questions will be sorted on the basis of recency. Example: if there are 10 answers linked to same question_id then sort 10 answers on the basis of the time the answer was posted. In other words, the question detail should contain the list of answers in an order where the answer posted most recently would be listed first
+
 Collections
+
 users
+
 {
+
   _id: ObjectId("88abc190ef0288abc190ef02"),
   fname: 'John',
   lname: 'Doe',
@@ -236,9 +291,13 @@ users
   password: '$2b$10$O.hrbBPCioVm237nAHYQ5OZy6k15TOoQSFhTT.recHBfQpZhM55Ty', // encrypted password
   createdAt: "2021-09-17T04:25:07.803Z",
   updatedAt: "2021-09-17T04:25:07.803Z",
+
 }
+
 question
+
 {
+
   description: 'how to get response from request body',
   tag: 'sci-fi','tech',
   askedBy: ObjectId("88abc190ef0288abc190ef55"),
@@ -247,12 +306,17 @@ question
   createdAt: "2021-09-17T04:25:07.803Z",
   updatedAt: "2021-09-17T04:25:07.803Z",
 
+
 }
+
 answer
+
 {
+
   ansnweredBy : ObjectId("88abc190ef0288abc190ef55"),
   questionId : ObjectId("88abc190ef0288abc190ef35"),
   text: 'from my point of view',
   createdAt: "2021-09-17T04:25:07.803Z",
   updatedAt: "2021-09-17T04:25:07.803Z",
+
 }
